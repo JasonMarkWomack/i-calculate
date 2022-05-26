@@ -1,37 +1,84 @@
-import React,{useState} from 'react';
+import React, { Component } from 'react';
 import './App.css';
-const [currentSum,setCurrentSum]=useState(0);
-const [clear,setClear]=useState(false);
+import ShowComponent from './components/ShowComponent';
+import IPadComponent from "./components/IPadComponent";
+
+class App extends Component {
+    constructor(){
+        super();
+
+        this.state = {
+            show: ""
+        }
+    }
+
+    onClick = button => {
+
+        if(button === "="){
+            this.calculate()
+        }
+
+        else if(button === "C"){
+            this.reset()
+        }
+        else if(button === "CE"){
+            this.backspace()
+        }
+
+        else {
+            this.setState({
+                show: this.state. show + button
+            })
+        }
+    };
 
 
-const Add=(e)=>{
-      e.preventDefault();
-      if(clear) setClear(false);
-      let currentNum=document.querySelector('#num').value
-     if(currentNum=='')
-      return;
-     let sum= currentSum+parseInt(currentNum);
-      setCurrentSum(sum);
-      document.querySelector('#num').value="";
-  
-  }
+    calculate = () => {
+        var checkShow = ''
+        if(this.state.show.includes('--')){
+            checkShow = this.state.show.replace('--','+')
+        }
 
-  
+        else {
+            checkShow = this.state.show
+        }
 
-function App() {
-  return(
-      <div className="App">  
-      <h1>I - Calculate</h1>    
-          
-     
-     <form>
-                <input type="text" id="result" readOnly />   
-                <input type="text" id="num" placeholder="enter a number" />
-               <button>Add</button>
-               <button>Clear</button>
-        </form>
-     </div>
-  )
+        try {
+            this.setState({
+                
+                show: (eval(checkShow) || "" ) + ""
+            })
+        } catch (e) {
+            this.setState({
+                show: "error"
+            })
+
+        }
+    };
+
+    reset = () => {
+        this.setState({
+            show: ""
+        })
+    };
+
+    backspace = () => {
+        this.setState({
+            show: this.state.show.slice(0, -1)
+        })
+    };
+
+    render() {
+        return (
+            <div>
+                <div className="calc-body">
+                    <h1>I - Calculator</h1>
+                    <ShowComponent show={this.state.show}/>
+                    <IPadComponent onClick={this.onClick}/>
+                </div>
+            </div>
+        );
+    }
 }
 
 export default App;
